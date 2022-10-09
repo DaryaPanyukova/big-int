@@ -10,22 +10,20 @@ uint2022_t from_string(const char* buff) {
 }
 
 
-void uint2022_t::extend(size_t new_size) {
-    size_t cur_size = this->number.size();
+void uint2022_t::Extend(size_t new_size) {
+    size_t cur_size = number.size();
     while (cur_size < new_size) {
-        this->number.push_back(0);
+        number.push_back(0);
         cur_size++;
     }
-
 }
 
-void uint2022_t::removeLeadingZeros() {
-    while (this->number.size() > 1 &&
-           this->number[this->number.size()-1] == 0) {
-        this->number.pop_back();
+void uint2022_t::RemoveLeadingZeros() {
+    while (number.size() > 1 && number[number.size() - 1] == 0) {
+        number.pop_back();
     }
-    if (this->number.size() == 0) {
-        this->number.push_back(0);
+    if (number.size() == 0) {
+        number.push_back(0);
     }
 }
 
@@ -74,8 +72,8 @@ uint2022_t operator-(const uint2022_t& lhs, const uint2022_t& rhs) {
     if (lhs < rhs) {
         return uint2022_t(-1); // Undefined Behavior
     }
-    uint2022_t result;
 
+    uint2022_t result;
     uint32_t carry = 0;
     for (size_t i = 0; i < lhs.number.size(); ++i) {
         uint32_t result_num = 0;
@@ -87,9 +85,8 @@ uint2022_t operator-(const uint2022_t& lhs, const uint2022_t& rhs) {
             right_num = 0;
         }
 
-        if (left_num > right_num ||
-            (left_num == right_num && carry == 0)) {
-            result_num = left_num- right_num - carry;
+        if (left_num > right_num || (left_num == right_num && carry == 0)) {
+            result_num = left_num - right_num - carry;
             carry = 0;
         } else {
             result_num = left_num - right_num - carry + uint2022_t::kBase;
@@ -97,7 +94,7 @@ uint2022_t operator-(const uint2022_t& lhs, const uint2022_t& rhs) {
         }
         result.number.push_back(result_num);
     }
-    result.removeLeadingZeros();
+    result.RemoveLeadingZeros();
     return result;
 }
 
@@ -106,38 +103,43 @@ uint2022_t operator*(const uint2022_t& lhs, const uint2022_t& rhs) {
     if (lhs.number.size() == 1 && rhs.number.size() == 1) {
         uint64_t res = static_cast<uint64_t> (lhs.number[0]) * rhs.number[0];
         std::string str = std::to_string(res);
-        return uint2022_t(str);
+        return uint2022_t{str.c_str()};
     }
 
     uint2022_t x = lhs;
     uint2022_t y = rhs;
 
     size_t max_size = std::max(lhs.number.size(), rhs.number.size());
-    x.extend(max_size);
-    y.extend(max_size);
+    x.Extend(max_size);
+    y.Extend(max_size);
 
 
     size_t mid = max_size / 2;
     uint2022_t x_left, x_right, y_left, y_right;
 
-    x_right.number = std::vector<uint32_t>(x.number.begin() + mid, x.number.end());
-    x_left.number = std::vector<uint32_t>(x.number.begin(), x.number.begin() + mid);
+    x_right.number = std::vector<uint32_t>(x.number.begin() + mid,
+                                           x.number.end());
+    x_left.number = std::vector<uint32_t>(x.number.begin(),
+                                          x.number.begin() + mid);
 
-    y_right.number = std::vector<uint32_t>(y.number.begin() + mid, y.number.end());
-    y_left.number = std::vector<uint32_t>(y.number.begin(), y.number.begin() + mid);
+    y_right.number = std::vector<uint32_t>(y.number.begin() + mid,
+                                           y.number.end());
+    y_left.number = std::vector<uint32_t>(y.number.begin(),
+                                          y.number.begin() + mid);
 
     uint2022_t first = (x_left * y_left);
     uint2022_t second = (x_right * y_right);
     uint2022_t third = (x_left + x_right) * (y_left + y_right);
 
-    uint2022_t result = pow(second, mid * 18) + pow(third - first - second, 9 * mid) + first;
-    result.removeLeadingZeros();
+    uint2022_t result = Pow(second, mid * 18) +
+            Pow(third - first - second, 9 * mid) + first;
+    result.RemoveLeadingZeros();
     return result;
 }
 
 uint2022_t operator/(const uint2022_t& lhs, const uint2022_t& rhs) {
     uint2022_t ans;
-    uint2022_t rem (uint32_t(0));
+    uint2022_t rem (uint32_t{0});
 
     int i = lhs.number.size() - 1;
     while (i >= 0) {
@@ -171,8 +173,6 @@ uint2022_t operator/(const uint2022_t& lhs, const uint2022_t& rhs) {
 
 
 std::pair <uint32_t, uint2022_t> DivideBinary(uint2022_t lhs, uint2022_t rhs) {
-    // return частное, остаток
-
     uint32_t quotient = 0;
 
     uint32_t left = 0;
@@ -188,9 +188,9 @@ std::pair <uint32_t, uint2022_t> DivideBinary(uint2022_t lhs, uint2022_t rhs) {
             left = mid;
         }
     }
+
     quotient = left;
     uint2022_t remainder = lhs - (quotient * rhs);
-
     return std::make_pair(quotient, remainder);
 }
 
@@ -292,44 +292,20 @@ uint2022_t::uint2022_t(const char *buff) {
     }
 
     size_t i;
-    uint32_t tmp = 0;
+    uint32_t cur_place = 0;
     for (i = strlen(buff); i >= 9; i -= 9) {
-        tmp = 0;
+        cur_place = 0;
         for (size_t j = i - 9; j < i; ++j) {
-            tmp = (tmp * 10) + (buff[j] - '0');
+            cur_place = (cur_place * 10) + (buff[j] - '0');
         }
-        number.push_back(tmp);
+        number.push_back(cur_place);
     }
     if (i != 0) {
-        tmp = 0;
+        cur_place = 0;
         for (size_t j = 0; j < i; ++j) {
-            tmp = (tmp * 10) + (buff[j] - '0');
+            cur_place = (cur_place * 10) + (buff[j] - '0');
         }
-        number.push_back(tmp);
-    }
-}
-
-uint2022_t::uint2022_t(std::string &buff) {
-    if (buff == "") {
-        this->number.push_back(-1); // Undefined behavior
-        return;
-    }
-
-    size_t i;
-    uint32_t tmp = 0;
-    for (i = buff.size(); i >= 9; i -= 9) {
-        tmp = 0;
-        for (size_t j = i - 9; j < i; ++j) {
-            tmp = (tmp * 10) + (buff[j] - '0');
-        }
-        number.push_back(tmp);
-    }
-    if (i != 0) {
-        tmp = 0;
-        for (size_t j = 0; j < i; ++j) {
-            tmp = (tmp * 10) + (buff[j] - '0');
-        }
-        number.push_back(tmp);
+        number.push_back(cur_place);
     }
 }
 
@@ -340,8 +316,7 @@ uint2022_t::uint2022_t(uint32_t value) {
     }
 }
 
-
-uint2022_t pow(const uint2022_t& lhs, uint32_t pow) { // lhs * (10 ^ pow), where pow can only be 18 or 9, due to Karatsuba algorithm
+uint2022_t Pow(const uint2022_t& lhs, uint32_t pow) { // lhs * (10 ^ pow), where pow can only be 18 or 9, due to Karatsuba algorithm
     uint2022_t result;
     for (size_t i = 0; i < pow / 9; ++i) {
         result.number.push_back(0);
@@ -349,6 +324,6 @@ uint2022_t pow(const uint2022_t& lhs, uint32_t pow) { // lhs * (10 ^ pow), where
     for (size_t i = 0; i < lhs.number.size(); ++i) {
         result.number.push_back(lhs.number[i]);
     }
-    result.removeLeadingZeros();
+    result.RemoveLeadingZeros();
     return result;
 }
