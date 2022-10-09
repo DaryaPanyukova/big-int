@@ -18,6 +18,7 @@ struct uint2022_t {
     void RemoveLeadingZeros();
     void Extend(size_t new_size);
 
+
     std::vector <uint32_t> number;
 };
 
