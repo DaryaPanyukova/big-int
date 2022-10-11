@@ -1,27 +1,25 @@
 #pragma once
-#include <algorithm>
 #include <cinttypes>
-#include <cstring>
-#include <iomanip>
 #include <iostream>
-#include <stdint.h>
 #include <vector>
-
+#include <cstring>
+#include <algorithm>
+#include <stdint.h>
+#include <iomanip>
 
 struct uint2022_t {
     static const uint32_t kBase = 1e9;
-    static const size_t kArraySize = 68;
-    static const uint32_t kInf = 4294967295;
+   // static const size_t SIZE = 68;
 
-    uint2022_t();
+    uint2022_t() = default;
     uint2022_t(uint32_t value);
     uint2022_t(const char* buff);
 
     void RemoveLeadingZeros();
     void Extend(size_t new_size);
-    size_t GetNumberSize() const;
 
-    uint32_t digits[kArraySize];
+
+    std::vector <uint32_t> number;
 };
 
 static_assert(sizeof(uint2022_t) <= 300, "Size of uint2022_t must be no higher than 300 bytes");
