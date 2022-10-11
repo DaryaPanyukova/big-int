@@ -15,6 +15,55 @@ uint2022_t from_string(const char *buff) {
 }
 
 
+uint2022_t Pow(const uint2022_t &lhs,
+               uint32_t pow) { // lhs * (10 ^ pow), where pow can only be 18 or 9, due to Karatsuba algorithm
+    uint2022_t result;
+    size_t size = lhs.GetNumberSize();
+    size_t i;
+    for (i = 0; i < pow / 9; ++i) {
+        result.digits[i] = 0;
+    }
+    for (size_t j = 0; j < size; ++j, ++i) {
+        result.digits[i] = lhs.digits[j];
+    }
+    result.RemoveLeadingZeros();
+    return result;
+}
+
+std::pair<uint32_t, uint2022_t> DivideBinary(uint2022_t lhs, uint2022_t rhs) {
+    uint32_t quotient = 0;
+
+    uint32_t left = 0;
+    uint32_t right = uint2022_t::kBase;
+
+    while (right - 1 > left) {
+        uint32_t mid = (right + left) / 2;
+
+        uint2022_t product = uint2022_t(mid) * rhs;
+        if (product > lhs) {
+            right = mid;
+        } else {
+            left = mid;
+        }
+    }
+
+    quotient = left;
+    uint2022_t tmp = (quotient * rhs);
+    uint2022_t remainder = lhs - tmp;
+    return std::make_pair(quotient, remainder);
+}
+
+void Copy(uint32_t *from, uint32_t *to, size_t size) {
+    while (size > 0) {
+        *to = *from;
+        ++to;
+        ++from;
+        --size;
+    }
+}
+
+
+
 void uint2022_t::Extend(size_t new_size) {
     size_t cur_size = GetNumberSize();
 
@@ -111,16 +160,6 @@ uint2022_t operator-(const uint2022_t &lhs, const uint2022_t &rhs) {
     return result;
 }
 
-void Copy(uint32_t *from, uint32_t *to, size_t size) {
-    while (size > 0) {
-        *to = *from;
-        ++to;
-        ++from;
-        --size;
-    }
-}
-
-
 uint2022_t operator*(const uint2022_t &lhs, const uint2022_t &rhs) {
     if (lhs.GetNumberSize() == 1 && rhs.GetNumberSize() == 1) {
         uint64_t res = static_cast<uint64_t> (lhs.digits[0]) * rhs.digits[0];
@@ -159,7 +198,6 @@ uint2022_t operator*(const uint2022_t &lhs, const uint2022_t &rhs) {
     result.RemoveLeadingZeros();
     return result;
 }
-
 
 uint2022_t operator/(const uint2022_t &lhs, const uint2022_t &rhs) {
     uint2022_t ans;
@@ -201,30 +239,6 @@ uint2022_t operator/(const uint2022_t &lhs, const uint2022_t &rhs) {
     std::reverse(ans.digits, ans.digits + ans.GetNumberSize());
     ans.RemoveLeadingZeros();
     return ans;
-}
-
-
-std::pair<uint32_t, uint2022_t> DivideBinary(uint2022_t lhs, uint2022_t rhs) {
-    uint32_t quotient = 0;
-
-    uint32_t left = 0;
-    uint32_t right = uint2022_t::kBase;
-
-    while (right - 1 > left) {
-        uint32_t mid = (right + left) / 2;
-
-        uint2022_t product = uint2022_t(mid) * rhs;
-        if (product > lhs) {
-            right = mid;
-        } else {
-            left = mid;
-        }
-    }
-
-    quotient = left;
-    uint2022_t tmp = (quotient * rhs);
-    uint2022_t remainder = lhs - tmp;
-    return std::make_pair(quotient, remainder);
 }
 
 bool operator==(const uint2022_t &lhs, const uint2022_t &rhs) {
@@ -324,14 +338,16 @@ uint2022_t::uint2022_t(const char *buff) {
     for (i = strlen(buff); i >= 9; i -= 9) {
         cur_place = 0;
         for (size_t j = i - 9; j < i; ++j) {
-            cur_place = (cur_place * 10) + (buff[j] - '0');
+            cur_place = (cur_place * 10) +
+                        (static_cast <int> (buff[j]) - static_cast <int> ('0'));
         }
         digits[ind++] = cur_place;
     }
     if (i != 0) {
         cur_place = 0;
         for (size_t j = 0; j < i; ++j) {
-            cur_place = (cur_place * 10) + (buff[j] - '0');
+            cur_place = (cur_place * 10) +
+                        (static_cast <int> (buff[j]) - static_cast <int> ('0'));
         }
         digits[ind++] = cur_place;
     }
@@ -353,18 +369,3 @@ uint2022_t::uint2022_t(uint32_t value) {
     }
 }
 
-
-uint2022_t Pow(const uint2022_t &lhs,
-               uint32_t pow) { // lhs * (10 ^ pow), where pow can only be 18 or 9, due to Karatsuba algorithm
-    uint2022_t result;
-    size_t size = lhs.GetNumberSize();
-    size_t i;
-    for (i = 0; i < pow / 9; ++i) {
-        result.digits[i] = 0;
-    }
-    for (size_t j = 0; j < size; ++j, ++i) {
-        result.digits[i] = lhs.digits[j];
-    }
-    result.RemoveLeadingZeros();
-    return result;
-}

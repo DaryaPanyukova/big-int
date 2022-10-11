@@ -32,6 +32,8 @@ uint2022_t from_string(const char* buff);
 uint2022_t Pow(const uint2022_t& number, uint32_t pow);
 std::pair <uint32_t, uint2022_t> DivideBinary(uint2022_t lhs, uint2022_t rhs);
 
+void Copy(uint32_t *from, uint32_t *to, size_t size);
+
 uint2022_t operator+(const uint2022_t& lhs, const uint2022_t& rhs);
 uint2022_t operator-(const uint2022_t& lhs, const uint2022_t& rhs);
 uint2022_t operator*(const uint2022_t& lhs, const uint2022_t& rhs);
