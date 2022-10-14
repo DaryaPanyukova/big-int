@@ -5,7 +5,7 @@ uint2022_t from_uint(uint32_t i) {
     return uint2022_t(i);
 }
 
-uint2022_t from_string(const char* buff) {
+uint2022_t from_string(const char *buff) {
     return uint2022_t(buff);
 }
 
@@ -28,7 +28,7 @@ void uint2022_t::RemoveLeadingZeros() {
 }
 
 
-uint2022_t operator+(const uint2022_t& lhs, const uint2022_t& rhs) {
+uint2022_t operator+(const uint2022_t &lhs, const uint2022_t &rhs) {
     uint2022_t result;
     uint32_t carry = 0;
 
@@ -68,7 +68,7 @@ uint2022_t operator+(const uint2022_t& lhs, const uint2022_t& rhs) {
     return result;
 }
 
-uint2022_t operator-(const uint2022_t& lhs, const uint2022_t& rhs) {
+uint2022_t operator-(const uint2022_t &lhs, const uint2022_t &rhs) {
     if (lhs < rhs) {
         return uint2022_t(-1); // Undefined Behavior
     }
@@ -99,7 +99,7 @@ uint2022_t operator-(const uint2022_t& lhs, const uint2022_t& rhs) {
 }
 
 
-uint2022_t operator*(const uint2022_t& lhs, const uint2022_t& rhs) {
+uint2022_t operator*(const uint2022_t &lhs, const uint2022_t &rhs) {
     if (lhs.number.size() == 1 && rhs.number.size() == 1) {
         uint64_t res = static_cast<uint64_t> (lhs.number[0]) * rhs.number[0];
         std::string str = std::to_string(res);
@@ -131,15 +131,15 @@ uint2022_t operator*(const uint2022_t& lhs, const uint2022_t& rhs) {
     uint2022_t second = (x_right * y_right);
     uint2022_t third = (x_left + x_right) * (y_left + y_right);
 
-    uint2022_t result = Pow(second, mid * 18) +
-            Pow(third - first - second, 9 * mid) + first;
+    uint2022_t result = BitwiseShift(second, mid * 2) +
+            BitwiseShift(third - first - second, mid) + first;
     result.RemoveLeadingZeros();
     return result;
 }
 
-uint2022_t operator/(const uint2022_t& lhs, const uint2022_t& rhs) {
+uint2022_t operator/(const uint2022_t &lhs, const uint2022_t &rhs) {
     uint2022_t ans;
-    uint2022_t rem (uint32_t{0});
+    uint2022_t rem(uint32_t{0});
 
     int i = lhs.number.size() - 1;
     while (i >= 0) {
@@ -162,7 +162,7 @@ uint2022_t operator/(const uint2022_t& lhs, const uint2022_t& rhs) {
         if (cur_lhs < rhs) {
             ans.number.push_back(0);
         } else {
-            std::pair <uint32_t, uint2022_t> tmp = DivideBinary(cur_lhs, rhs);
+            std::pair<uint32_t, uint2022_t> tmp = DivideBinary(cur_lhs, rhs);
             rem = tmp.second;
             ans.number.push_back(tmp.first);
         }
@@ -172,7 +172,8 @@ uint2022_t operator/(const uint2022_t& lhs, const uint2022_t& rhs) {
 }
 
 
-std::pair <uint32_t, uint2022_t> DivideBinary(uint2022_t lhs, uint2022_t rhs) {
+std::pair<uint32_t, uint2022_t>
+DivideBinary(const uint2022_t &lhs, const uint2022_t &rhs) {
     uint32_t quotient = 0;
 
     uint32_t left = 0;
@@ -194,18 +195,18 @@ std::pair <uint32_t, uint2022_t> DivideBinary(uint2022_t lhs, uint2022_t rhs) {
     return std::make_pair(quotient, remainder);
 }
 
-bool operator==(const uint2022_t& lhs, const uint2022_t& rhs) {
+bool operator==(const uint2022_t &lhs, const uint2022_t &rhs) {
     if (lhs.number.size() != rhs.number.size()) {
         return false;
     }
     return lhs.number == rhs.number;
 }
 
-bool operator!=(const uint2022_t& lhs, const uint2022_t& rhs) {
+bool operator!=(const uint2022_t &lhs, const uint2022_t &rhs) {
     return !(lhs == rhs);
 }
 
-bool operator==(const uint2022_t& lhs, const uint32_t& rhs) {
+bool operator==(const uint2022_t &lhs, const uint32_t &rhs) {
     if (rhs % uint2022_t::kBase != lhs.number[0]) {
         return false;
     }
@@ -222,14 +223,18 @@ bool operator==(const uint2022_t& lhs, const uint32_t& rhs) {
     return true;
 }
 
-bool operator!=(const uint2022_t& lhs, const uint32_t& rhs) {
+bool operator!=(const uint2022_t &lhs, const uint32_t &rhs) {
     return !(lhs == rhs);
 }
 
-bool operator>(const uint2022_t& lhs, const uint2022_t& rhs) {
-    if (lhs.number.size() > rhs.number.size()) {
+bool operator>(const uint2022_t &lhs, const uint2022_t &rhs) {
+    return rhs < lhs;
+}
+
+bool operator<(const uint2022_t &lhs, const uint2022_t &rhs) {
+    if (lhs.number.size() < rhs.number.size()) {
         return true;
-    } else if (lhs.number.size() < rhs.number.size()) {
+    } else if (lhs.number.size() > rhs.number.size()) {
         return false;
     }
 
@@ -237,49 +242,24 @@ bool operator>(const uint2022_t& lhs, const uint2022_t& rhs) {
         if (lhs.number[i] == rhs.number[i]) {
             continue;
         }
-        return lhs.number[i] > rhs.number[i];
+        return lhs.number[i] < rhs.number[i];
     }
     return false;
 }
 
-bool operator<(const uint2022_t& lhs, const uint2022_t& rhs) {
-    return rhs > lhs;
+bool operator>=(const uint2022_t &lhs, const uint2022_t &rhs) {
+    return !(lhs < rhs);
 }
 
-bool operator>=(const uint2022_t& lhs, const uint2022_t& rhs) {
-    if (lhs.number.size() > rhs.number.size()) {
-        return true;
-    } else if (lhs.number.size() < rhs.number.size()) {
-        return false;
-    }
-
-    for (int i = lhs.number.size() - 1; i >= 0; --i) {
-        if (lhs.number[i] == rhs.number[i]) {
-            continue;
-        }
-        return lhs.number[i] >= rhs.number[i];
-    }
-    return false;
-}
-
-bool operator<=(const uint2022_t& lhs, const uint2022_t& rhs) {
-    return rhs >= lhs;
+bool operator<=(const uint2022_t &lhs, const uint2022_t &rhs) {
+    return !(rhs < lhs);
 }
 
 
-std::ostream& operator<<(std::ostream& stream, const uint2022_t& value) {
+std::ostream &operator<<(std::ostream &stream, const uint2022_t &value) {
     stream << value.number[value.number.size() - 1];
     for (int i = value.number.size() - 2; i >= 0; --i) {
-        if (value.number[i] == 0) {
-            stream << "000000000";
-            continue;
-        }
-        uint32_t tmp = value.number[i];
-        while (tmp < 1e8) {
-            stream << 0;
-            tmp *= 10;
-        }
-        stream << value.number[i];
+        stream << std::setfill('0') << std::setw(9) << value.number[i];
     }
     return stream;
 }
@@ -316,9 +296,9 @@ uint2022_t::uint2022_t(uint32_t value) {
     }
 }
 
-uint2022_t Pow(const uint2022_t& lhs, uint32_t pow) { // lhs * (10 ^ pow), where pow can only be 18 or 9, due to Karatsuba algorithm
+uint2022_t BitwiseShift(const uint2022_t &lhs, uint32_t place) {
     uint2022_t result;
-    for (size_t i = 0; i < pow / 9; ++i) {
+    for (size_t i = 0; i < place; ++i) {
         result.number.push_back(0);
     }
     for (size_t i = 0; i < lhs.number.size(); ++i) {
