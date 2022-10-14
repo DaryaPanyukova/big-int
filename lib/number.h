@@ -9,17 +9,18 @@
 
 struct uint2022_t {
     static const uint32_t kBase = 1e9;
-   // static const size_t SIZE = 68;
+    static const size_t kArraySize = 68;
+    static const uint32_t kInf = 4294967295;
 
-    uint2022_t() = default;
+    uint2022_t();
     uint2022_t(uint32_t value);
     uint2022_t(const char* buff);
 
     void RemoveLeadingZeros();
     void Extend(size_t new_size);
+    size_t GetNumberSize() const;
 
-
-    std::vector <uint32_t> number;
+    uint32_t digits[kArraySize];
 };
 
 static_assert(sizeof(uint2022_t) <= 300, "Size of uint2022_t must be no higher than 300 bytes");
@@ -27,8 +28,10 @@ static_assert(sizeof(uint2022_t) <= 300, "Size of uint2022_t must be no higher t
 uint2022_t from_uint(uint32_t i);
 uint2022_t from_string(const char* buff);
 
-uint2022_t Pow(const uint2022_t& number, uint32_t pow);
-std::pair <uint32_t, uint2022_t> DivideBinary(uint2022_t lhs, uint2022_t rhs);
+void Copy(uint32_t* from, uint32_t* to, size_t size);
+
+uint2022_t BitwiseShift(const uint2022_t& number, uint32_t pow);
+std::pair <uint32_t, uint2022_t> DivideBinary(const uint2022_t& lhs, const uint2022_t& rhs);
 
 uint2022_t operator+(const uint2022_t& lhs, const uint2022_t& rhs);
 uint2022_t operator-(const uint2022_t& lhs, const uint2022_t& rhs);
