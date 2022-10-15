@@ -18,9 +18,10 @@ struct uint2022_t {
 
     void RemoveLeadingZeros();
     void Extend(size_t new_size);
-    size_t GetNumberSize() const;
+    void UpdateSize();
 
     uint32_t digits[kArraySize];
+    size_t size;
 };
 
 static_assert(sizeof(uint2022_t) <= 300, "Size of uint2022_t must be no higher than 300 bytes");

@@ -4,6 +4,7 @@ uint2022_t::uint2022_t() {
     for (size_t i = 0; i < uint2022_t::kArraySize; ++i) {
         digits[i] = uint2022_t::kInf;
     }
+    size = 0;
 }
 
 uint2022_t from_uint(uint32_t i) {
@@ -16,31 +17,35 @@ uint2022_t from_string(const char* buff) {
 
 
 void uint2022_t::Extend(size_t new_size) {
-    size_t cur_size = GetNumberSize();
-
+    size_t cur_size = size;
+    size = new_size;
     for (size_t i = cur_size; i < new_size; ++i) {
         digits[i] = 0;
     }
 }
 
-size_t uint2022_t::GetNumberSize() const {
-    size_t size = 0;
-    for (int i = uint2022_t::kArraySize - 1; i >= 0; --i) {
+void uint2022_t::UpdateSize() {
+    size_t cur_size = 0;
+    for (size_t i = uint2022_t::kArraySize; i-- > 0;) {
         if (digits[i] != uint2022_t::kInf) {
             break;
         } else {
-            ++size;
+            cur_size++;
         }
     }
-    return uint2022_t::kArraySize - size;
+    size = uint2022_t::kArraySize - cur_size;
 }
 
 void uint2022_t::RemoveLeadingZeros() {
-    for (int i = uint2022_t::kArraySize - 1; i > 0; --i) {
+    if (size == 1) {
+        return;
+    }
+    for (size_t i = uint2022_t::kArraySize; i-- > 0;) {
         if (digits[i] == uint2022_t::kInf) {
             continue;
         } else if (digits[i] == 0) {
             digits[i] = uint2022_t::kInf;
+            size--;
         } else {
             break;
         }
@@ -52,8 +57,8 @@ uint2022_t operator+(const uint2022_t& lhs, const uint2022_t& rhs) {
     uint2022_t result;
     uint32_t carry = 0;
 
-    size_t lhs_size = lhs.GetNumberSize();
-    size_t rhs_size = rhs.GetNumberSize();
+    size_t lhs_size = lhs.size;
+    size_t rhs_size = rhs.size;
     size_t i;
     for (i = 0; i < std::max(lhs_size, rhs_size); ++i) {
         uint32_t place_sum = carry;
@@ -76,6 +81,7 @@ uint2022_t operator+(const uint2022_t& lhs, const uint2022_t& rhs) {
     if (carry != 0 && i < uint2022_t::kArraySize) {
         result.digits[i] = carry;
     }
+    result.UpdateSize();
     return result;
 }
 
@@ -86,8 +92,8 @@ uint2022_t operator-(const uint2022_t& lhs, const uint2022_t& rhs) {
 
     uint2022_t result;
     uint32_t carry = 0;
-    size_t rhs_size = rhs.GetNumberSize();
-    size_t lhs_size = lhs.GetNumberSize();
+    size_t rhs_size = rhs.size;
+    size_t lhs_size = lhs.size;
 
     for (size_t i = 0; i < lhs_size; ++i) {
         uint32_t result_num = 0;
@@ -107,6 +113,7 @@ uint2022_t operator-(const uint2022_t& lhs, const uint2022_t& rhs) {
         result.digits[i] = result_num;
     }
 
+    result.UpdateSize();
     result.RemoveLeadingZeros();
     return result;
 }
@@ -122,7 +129,7 @@ void Copy(uint32_t* from, uint32_t* to, size_t size) {
 
 
 uint2022_t operator*(const uint2022_t& lhs, const uint2022_t& rhs) {
-    if (lhs.GetNumberSize() == 1 && rhs.GetNumberSize() == 1) {
+    if (lhs.size == 1 && rhs.size == 1) {
         uint64_t res = static_cast<uint64_t> (lhs.digits[0]) * rhs.digits[0];
         std::string str = std::to_string(res);
         return uint2022_t{str.c_str()};
@@ -131,7 +138,7 @@ uint2022_t operator*(const uint2022_t& lhs, const uint2022_t& rhs) {
     uint2022_t x = lhs;
     uint2022_t y = rhs;
 
-    size_t max_size = std::max(lhs.GetNumberSize(), rhs.GetNumberSize());
+    size_t max_size = std::max(lhs.size, rhs.size);
     x.Extend(max_size);
     y.Extend(max_size);
 
@@ -139,10 +146,16 @@ uint2022_t operator*(const uint2022_t& lhs, const uint2022_t& rhs) {
     size_t mid = max_size / 2;
     uint2022_t x_left, x_right, y_left, y_right;
 
-    Copy(x.digits + mid, x_right.digits, max_size - mid);
     Copy(x.digits, x_left.digits, mid);
-    Copy(y.digits + mid, y_right.digits, max_size - mid);
+    Copy(x.digits + mid, x_right.digits, max_size - mid);
     Copy(y.digits, y_left.digits, mid);
+    Copy(y.digits + mid, y_right.digits, max_size - mid);
+
+    x_left.size = mid;
+    x_right.size = max_size - mid;
+    y_left.size = mid;
+    y_right.size = max_size - mid;
+
 
     uint2022_t first = (x_left * y_left);
     uint2022_t second = (x_right * y_right);
@@ -150,49 +163,55 @@ uint2022_t operator*(const uint2022_t& lhs, const uint2022_t& rhs) {
 
     uint2022_t result = BitwiseShift(second, mid * 2) +
                         BitwiseShift(third - first - second, mid) + first;
+
+
     result.RemoveLeadingZeros();
+    result.UpdateSize();
     return result;
 }
 
 
 uint2022_t operator/(const uint2022_t& lhs, const uint2022_t& rhs) {
     uint2022_t ans;
-    size_t ans_size = 0;
 
     uint2022_t rem(uint32_t{0});
 
-    int i = lhs.GetNumberSize() - 1;
+    int i = lhs.size - 1;
     while (i >= 0) {
         uint2022_t cur_lhs;
         if (rem != 0) {
-            Copy(rem.digits, cur_lhs.digits, rem.GetNumberSize());
+            Copy(rem.digits, cur_lhs.digits, rem.size);
+            cur_lhs.size = rem.size;
         } else {
             if (lhs.digits[i] == 0) {
-                ans.digits[ans_size++] = 0;
+                ans.digits[ans.size++] = 0;
                 --i;
                 continue;
             }
         }
 
         while (cur_lhs < rhs && i >= 0) {
-            size_t tmp_size = cur_lhs.GetNumberSize();
-            for (int j = tmp_size; j > 0; --j) {
+            size_t tmp_size = cur_lhs.size;
+            for (size_t j = tmp_size + 1; j-- > 0;) {
                 cur_lhs.digits[j] = cur_lhs.digits[j - 1];
             }
             cur_lhs.digits[0] = lhs.digits[i];
+            ++cur_lhs.size;
             --i;
             if (cur_lhs < rhs) {
-                ans.digits[ans_size++] = 0;
+                ans.digits[ans.size++] = 0;
             }
         }
 
+        cur_lhs.UpdateSize();
         if (cur_lhs > rhs) {
             std::pair<uint32_t, uint2022_t> tmp = DivideBinary(cur_lhs, rhs);
             rem = tmp.second;
-            ans.digits[ans_size++] = tmp.first;
+            ans.digits[ans.size++] = tmp.first;
         }
     }
-    std::reverse(ans.digits, ans.digits + ans.GetNumberSize());
+    std::reverse(ans.digits, ans.digits + ans.size);
+    ans.UpdateSize();
     ans.RemoveLeadingZeros();
     return ans;
 }
@@ -252,15 +271,14 @@ bool operator!=(const uint2022_t& lhs, const uint32_t& rhs) {
 }
 
 bool operator<(const uint2022_t& lhs, const uint2022_t& rhs) {
-    for (size_t i = uint2022_t::kArraySize - 1; i-- > 0;) {
+    if (lhs.size > rhs.size) {
+        return false;
+    } else if (lhs.size < rhs.size) {
+        return true;
+    }
+    for (size_t i = uint2022_t::kArraySize; i-- > 0;) {
         if (lhs.digits[i] == rhs.digits[i]) {
             continue;
-        }
-
-        if (lhs.digits[i] == uint2022_t::kInf) {
-            return true;
-        } else if (rhs.digits[i] == uint2022_t::kInf) {
-            return false;
         }
         return lhs.digits[i] < rhs.digits[i];
     }
@@ -282,8 +300,8 @@ bool operator<=(const uint2022_t& lhs, const uint2022_t& rhs) {
 
 
 std::ostream& operator<<(std::ostream& stream, const uint2022_t& value) {
-    stream << value.digits[value.GetNumberSize() - 1];
-    for (int i = value.GetNumberSize() - 2; i >= 0; --i) {
+    stream << value.digits[value.size - 1];
+    for (int i = value.size - 2; i >= 0; --i) {
         stream << std::setfill('0') << std::setw(9) << value.digits[i];
     }
     return stream;;
@@ -291,6 +309,8 @@ std::ostream& operator<<(std::ostream& stream, const uint2022_t& value) {
 
 
 uint2022_t::uint2022_t(const char* buff) {
+    size = 0;
+
     size_t i;
     size_t ind = 0;
     uint32_t cur_place = 0;
@@ -299,6 +319,7 @@ uint2022_t::uint2022_t(const char* buff) {
         for (size_t j = i - 9; j < i; ++j) {
             cur_place = (cur_place * 10) + (buff[j] - '0');
         }
+        ++size;
         digits[ind++] = cur_place;
     }
     if (i != 0) {
@@ -307,6 +328,7 @@ uint2022_t::uint2022_t(const char* buff) {
             cur_place = (cur_place * 10) + (buff[j] - '0');
         }
         digits[ind++] = cur_place;
+        ++size;
     }
 
     for (; ind < uint2022_t::kArraySize; ++ind) {
@@ -317,8 +339,11 @@ uint2022_t::uint2022_t(const char* buff) {
 uint2022_t::uint2022_t(uint32_t value) {
     size_t i = 0;
     digits[i++] = value % uint2022_t::kBase;
+    size = 0;
+    ++size;
     if (value / uint2022_t::kBase > 0) {
         digits[i++] = value / uint2022_t::kBase;
+        ++size;
     }
 
     for (; i < uint2022_t::kArraySize; ++i) {
@@ -329,7 +354,7 @@ uint2022_t::uint2022_t(uint32_t value) {
 
 uint2022_t BitwiseShift(const uint2022_t& lhs, uint32_t pow) {
     uint2022_t result;
-    size_t size = lhs.GetNumberSize();
+    size_t size = lhs.size;
     size_t i;
     for (i = 0; i < pow; ++i) {
         result.digits[i] = 0;
@@ -337,6 +362,7 @@ uint2022_t BitwiseShift(const uint2022_t& lhs, uint32_t pow) {
     for (size_t j = 0; j < size; ++j, ++i) {
         result.digits[i] = lhs.digits[j];
     }
+    result.UpdateSize();
     result.RemoveLeadingZeros();
     return result;
 }
