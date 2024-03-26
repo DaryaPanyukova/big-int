@@ -1,0 +1,25 @@
+# ninja log v5
+300	381	6870605100711702	googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-build	24d2029deb4fd8a0
+1	541	6870506880828546	googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-mkdir	2d6698c266483417
+0	195	0	googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-update	1e60d35149b244d9
+247	299	6870605100144870	D:/ITMOlabs/basics_c++/labwork2-DaryaPanyukova/cmake-build-debug/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-configure	b153d1440652b598
+1	541	6870506880828546	D:/ITMOlabs/basics_c++/labwork2-DaryaPanyukova/cmake-build-debug/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-mkdir	2d6698c266483417
+542	13966	6870507015054646	D:/ITMOlabs/basics_c++/labwork2-DaryaPanyukova/cmake-build-debug/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-download	4cf98e530210e64e
+486	557	6870605102712310	D:/ITMOlabs/basics_c++/labwork2-DaryaPanyukova/cmake-build-debug/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-done	d57cb41f9d0ce396
+0	195	0	D:/ITMOlabs/basics_c++/labwork2-DaryaPanyukova/cmake-build-debug/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-update	1e60d35149b244d9
+542	13966	6870507015054646	googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-download	4cf98e530210e64e
+300	381	6870605100711702	D:/ITMOlabs/basics_c++/labwork2-DaryaPanyukova/cmake-build-debug/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-build	24d2029deb4fd8a0
+195	247	6870605099622531	googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-patch	a584ccd08eb34800
+195	247	6870605099622531	D:/ITMOlabs/basics_c++/labwork2-DaryaPanyukova/cmake-build-debug/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-patch	a584ccd08eb34800
+247	299	6870605100144870	googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-configure	b153d1440652b598
+486	557	6870605102712310	CMakeFiles/googletest-populate-complete	d57cb41f9d0ce396
+381	435	6870605101490670	googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-install	2ccc84836161ad68
+381	435	6870605101490670	D:/ITMOlabs/basics_c++/labwork2-DaryaPanyukova/cmake-build-debug/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-install	2ccc84836161ad68
+435	486	6870605102008602	googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-test	5479cb854ba25551
+435	486	6870605102008602	D:/ITMOlabs/basics_c++/labwork2-DaryaPanyukova/cmake-build-debug/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-test	5479cb854ba25551
+486	557	6870605102712310	googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-done	d57cb41f9d0ce396
+486	557	6870605102712310	D:/ITMOlabs/basics_c++/labwork2-DaryaPanyukova/cmake-build-debug/_deps/googletest-subbuild/CMakeFiles/googletest-populate-complete	d57cb41f9d0ce396
+1	337	6990569978005697	googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-mkdir	c2ce8da64400d8bd
+1	337	6990569978005697	D:/ITMOlabs/basics_c++/labwork2-DaryaPanyukova/cmake-build-debug/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-mkdir	c2ce8da64400d8bd
+338	441	6990569979057793	googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-download	6495f1431f704a73
+338	441	6990569979057793	D:/ITMOlabs/basics_c++/labwork2-DaryaPanyukova/cmake-build-debug/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-download	6495f1431f704a73

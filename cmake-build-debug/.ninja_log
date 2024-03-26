@@ -1,0 +1,23 @@
+# ninja log v5
+18	669	6875466658800935	bin/CMakeFiles/lab2.dir/main.cpp.obj	dca211f94a17181f
+9	1254	6875469041166730	lib/CMakeFiles/number.dir/number.cpp.obj	5ce2e96223d06256
+1255	1348	6875469042104013	lib/libnumber.a	71a4041d790eb9ee
+10444	12933	6870617029627036	lib/libgtest.a	150bef058f4aef7c
+1348	1529	6875469043822360	bin/lab2.exe	5c5d506d1d52ffe
+1351	6228	6875469090842778	tests/number_tests[1]_tests.cmake	e65db1668bc85f37
+22	2989	6870616929988081	_deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.obj	2cab762781bd283c
+17	3929	6875435685722369	tests/CMakeFiles/number_tests.dir/number_test.cpp.obj	8111fb10f6e2178c
+14	3555	6870616935812506	_deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.obj	57bf6fb1b992384
+10	5145	6870616951680022	_deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.obj	874f97eab07800cb
+18	10442	6870617004605394	_deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.obj	43f6a16470d55b51
+12935	13040	6870617030706969	lib/libgtest_main.a	64b25180dcceebb8
+12933	13311	6870617033409718	lib/libgmock.a	61e4ea5ca66c9919
+13311	13383	6870617034137773	lib/libgmock_main.a	acdd14d77400cc0e
+1351	6228	6875469090842778	tests/number_tests.exe	e65db1668bc85f37
+1351	6228	6875469090842778	D:/ITMOlabs/basics_c++/labwork2-DaryaPanyukova/cmake-build-debug/tests/number_tests[1]_tests.cmake	e65db1668bc85f37
+23	1258	6878666416034978	lib/CMakeFiles/number.dir/number.cpp.obj	5ce2e96223d06256
+1259	1415	6878666417657724	lib/libnumber.a	71a4041d790eb9ee
+1415	1821	6878666421680177	bin/lab2.exe	5c5d506d1d52ffe
+1420	7612	6878666479455991	tests/number_tests.exe	e65db1668bc85f37
+1420	7612	6878666479455991	tests/number_tests[1]_tests.cmake	e65db1668bc85f37
+1420	7612	6878666479455991	D:/ITMOlabs/basics_c++/labwork2-DaryaPanyukova/cmake-build-debug/tests/number_tests[1]_tests.cmake	e65db1668bc85f37

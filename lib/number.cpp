@@ -182,13 +182,12 @@ uint2022_t operator/(const uint2022_t& lhs, const uint2022_t& rhs) {
         if (rem != 0) {
             Copy(rem.digits, cur_lhs.digits, rem.size);
             cur_lhs.size = rem.size;
-        } else {
-            if (lhs.digits[i] == 0) {
-                ans.digits[ans.size++] = 0;
-                --i;
-                continue;
-            }
+        } else if (lhs.digits[i] == 0) {
+            ans.digits[ans.size++] = 0;
+            --i;
+            continue;
         }
+
 
         while (cur_lhs < rhs && i >= 0) {
             size_t tmp_size = cur_lhs.size;
@@ -205,7 +204,7 @@ uint2022_t operator/(const uint2022_t& lhs, const uint2022_t& rhs) {
 
         cur_lhs.UpdateSize();
         if (cur_lhs > rhs) {
-            std::pair<uint32_t, uint2022_t> tmp = DivideBinary(cur_lhs, rhs);
+            std::pair <uint32_t, uint2022_t> tmp = DivideBinary(cur_lhs, rhs);
             rem = tmp.second;
             ans.digits[ans.size++] = tmp.first;
         }
@@ -217,7 +216,7 @@ uint2022_t operator/(const uint2022_t& lhs, const uint2022_t& rhs) {
 }
 
 
-std::pair<uint32_t, uint2022_t>
+std::pair <uint32_t, uint2022_t>
 DivideBinary(const uint2022_t& lhs, const uint2022_t& rhs) {
     uint32_t quotient = 0;
 
